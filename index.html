@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Қазақ зиялылары — Тест</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: 20px 15px;
+    color: #222;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    padding: 30px 25px;
+  }
+  h1 {
+    text-align: center;
+    color: #1e3c72;
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  .session-info {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 20px;
+    padding: 6px 12px;
+    background: #f0f4fa;
+    border-radius: 20px;
+    display: inline-block;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+  .login-screen { text-align: center; padding: 20px 0; }
+  .login-screen h2 { color: #1e3c72; margin-bottom: 15px; font-size: 20px; }
+  .login-screen p { color: #666; margin-bottom: 20px; font-size: 14px; line-height: 1.5; }
+  .login-input {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #dfe6ee;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+    transition: 0.3s;
+  }
+  .login-input:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 4px rgba(42,82,152,0.15);
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.3s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(42,82,152,0.4); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn.secondary {
+    background: #fff;
+    color: #1e3c72;
+    border: 2px solid #1e3c72;
+  }
+  .btn.gold {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+  }
+  .btn.small {
+    padding: 10px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .test-screen { display: none; }
+  .user-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f0f4fa;
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .user-badge strong { color: #1e3c72; }
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e6ef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2a5298, #4a90e2);
+    width: 0%;
+    transition: 0.4s;
+  }
+  .question {
+    background: #f7f9fc;
+    border-left: 5px solid #2a5298;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .question.correct { border-left-color: #2ecc71; background: #eafaf1; }
+  .question.wrong { border-left-color: #e74c3c; background: #fdecea; }
+  .q-text {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 14px;
+    color: #1e3c72;
+    line-height: 1.5;
+  }
+  .options label {
+    display: block;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    background: #fff;
+    border: 2px solid #dfe6ee;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 15px;
+  }
+  .options label:hover { border-color: #2a5298; background: #eef4ff; }
+  .options input { margin-right: 10px; }
+  .options input:checked + span { font-weight: 600; color: #1e3c72; }
+  .answer-feedback {
+    margin-top: 12px;
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: none;
+    font-weight: 600;
+  }
+  .answer-feedback.show { display: block; }
+  .answer-feedback.correct { background: #d4f5e2; color: #1e7e46; }
+  .answer-feedback.wrong { background: #fadbd8; color: #a93226; }
+  .result-box {
+    display: none;
+    text-align: center;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  .result-box.show { display: block; }
+  .result-box h2 { font-size: 22px; margin-bottom: 10px; }
+  .score { font-size: 48px; font-weight: 800; margin: 10px 0; }
+  .score span { font-size: 24px; color: #888; }
+  .message { font-size: 16px; margin-top: 8px; font-weight: 600; }
+
+  .live-leaderboard {
+    display: none;
+    margin-top: 25px;
+    background: #f0f4fa;
+    border-radius: 12px;
+    padding: 18px 15px;
+    border: 2px dashed #2a5298;
+  }
+  .live-leaderboard.show { display: block; }
+  .live-leaderboard h3 {
+    text-align: center;
+    color: #1e3c72;
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+  .live-leaderboard .live-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 12px;
+  }
+  .live-hint .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #2ecc71;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+  .leaderboard {
+    display: none;
+    margin-top: 20px;
+  }
+  .leaderboard h2 {
+    text-align: center;
+    color: #1e3c72;
+    margin-bottom: 15px;
+    font-size: 22px;
+  }
+  .lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+  .lb-table th {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    padding: 12px 10px;
+    font-size: 14px;
+    text-align: left;
+  }
+  .lb-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eef2f7;
+    font-size: 15px;
+  }
+  .lb-table tr:nth-child(even) { background: #f8fafc; }
+  .lb-table tr:hover { background: #eef4ff; }
+  .rank-1 td { background: linear-gradient(90deg, #fff3cd, #ffe69c) !important; font-weight: 700; }
+  .rank-2 td { background: linear-gradient(90deg, #f0f0f0, #d8d8d8) !important; font-weight: 600; }
+  .rank-3 td { background: linear-gradient(90deg, #fde4cc, #f5cba7) !important; font-weight: 600; }
+  .medal { font-size: 18px; margin-right: 6px; }
+  .live-lb-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .live-lb-table th {
+    background: transparent;
+    color: #1e3c72;
+    padding: 8px 6px;
+    font-size: 12px;
+    text-align: left;
+    border-bottom: 2px solid #2a5298;
+  }
+  .live-lb-table td {
+    padding: 8px 6px;
+    font-size: 14px;
+    border-bottom: 1px solid #dde5ef;
+  }
+  .live-lb-table tr.top-1 td { background: #fff3cd; font-weight: 700; }
+  .live-lb-table tr.top-2 td { background: #f0f0f0; font-weight: 600; }
+  .live-lb-table tr.top-3 td { background: #fde4cc; font-weight: 600; }
+  .live-lb-table tr.me td { background: #d4f5e2 !important; font-weight: 700; }
+  .already-done {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    background: #fff3cd;
+    border-radius: 12px;
+    color: #856404;
+  }
+  .already-done h2 { font-size: 22px; margin-bottom: 10px; }
+  .already-done p { font-size: 15px; margin-top: 10px; }
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    background: #eef2f7;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+    transition: 0.2s;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+  }
+  .empty-lb {
+    text-align: center;
+    padding: 30px 15px;
+    color: #888;
+    font-size: 14px;
+  }
+  .empty-lb .icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .teacher-panel {
+    margin-top: 25px;
+    padding: 15px;
+    background: #fff8e1;
+    border-radius: 10px;
+    border: 2px dashed #f39c12;
+    text-align: center;
+  }
+  .teacher-panel h4 {
+    color: #856404;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .teacher-panel p {
+    font-size: 12px;
+    color: #856404;
+    margin-bottom: 10px;
+  }
+  .loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-screen {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+  }
+  .loading-screen .big-loader {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #dfe6ee;
+    border-top-color: #2a5298;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>ХХ ғасырдың басындағы қазақ зиялылары</h1>
+  <p class="subtitle">10 сұрақ · Әр дұрыс жауапқа 1 балл · Ең жоғары ұпай — 10</p>
+
+  <!-- Жүктелу экраны -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="big-loader"></div>
+    <p>Жүктелуде...</p>
+  </div>
+
+  <!-- Кіру экраны -->
+  <div class="login-screen" id="loginScreen" style="display:none;">
+    <div class="session-info">Сессия: <span id="sessionLabel">...</span></div>
+    <h2>👋 Атыңызды жазыңыз</h2>
+    <p>Тестті тек 1 рет тапсыра аласыз. Барлық оқушылардың нәтижесі ортақ рейтингте көрінеді!</p>
+    <input type="text" id="studentName" class="login-input" placeholder="Аты-жөніңіз" maxlength="40" autocomplete="off">
+    <button class="btn" id="startBtn" onclick="startQuiz()">Тестті бастау</button>
+    <button class="btn secondary" onclick="showLeaderboard()">📊 Толық рейтингті көру</button>
+  </div>
+
+  <!-- Тест экраны -->
+  <div class="test-screen" id="testScreen">
+    <div class="user-badge">
+      <div>👤 <strong id="displayName">Оқушы</strong></div>
+      <div id="progressText">0 / 10</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <form id="quizForm">
+      <div class="question" data-q="1">
+        <div class="q-text">1. ХХ ғасырдың басындағы қазақ зиялыларының мақсаты қандай болды?</div>
+        <div class="options">
+          <label><input type="radio" name="q1" value="a"><span>A. Қазақ халқының ұлттық мүддесін қорғау</span></label>
+          <label><input type="radio" name="q1" value="b"><span>B. Сауда-саттықты дамыту</span></label>
+          <label><input type="radio" name="q1" value="c"><span>C. Жаңа қалалар салу</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="a">Дұрыс жауап: A. Қазақ халқының ұлттық мүддесін қорғау</div>
+      </div>
+
+      <div class="question" data-q="2">
+        <div class="q-text">2. Әлихан Бөкейхан кім?</div>
+        <div class="options">
+          <label><input type="radio" name="q2" value="a"><span>A. Ақын және сазгер</span></label>
+          <label><input type="radio" name="q2" value="b"><span>B. Саяси көшбасшы, қоғам қайраткері</span></label>
+          <label><input type="radio" name="q2" value="c"><span>C. Әскери қолбасшы</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="b">Дұрыс жауап: B. Саяси көшбасшы, қоғам қайраткері</div>
+      </div>
+
+      <div class="question" data-q="3">
+        <div class="q-text">3. Ахмет Байтұрсынұлы қазақ халқына қандай қызмет атқарды?</div>
+        <div class="options">
+          <label><input type="radio" name="q3" value="a"><span>A. Тек әскери қызмет атқарды</span></label>
+          <label><input type="radio" name="q3" value="b"><span>B. Теміржол саласын дамытты</span></label>
+          <label><input type="radio" name="q3" value="c"><span>C. Ағартушы, тіл білімінің негізін қалаушы болды</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="c">Дұрыс жауап: C. Ағартушы, тіл білімінің негізін қалаушы болды</div>
+      </div>
+
+      <div class="question" data-q="4">
+        <div class="q-text">4. Міржақып Дулатұлы кім?</div>
+        <div class="options">
+          <label><input type="radio" name="q4" value="a"><span>A. Ақын, жазушы, қоғам қайраткері</span></label>
+          <label><input type="radio" name="q4" value="b"><span>B. Дәрігер, ғалым</span></label>
+          <label><input type="radio" name="q4" value="c"><span>C. Саяхатшы, теңізші</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="a">Дұрыс жауап: A. Ақын, жазушы, қоғам қайраткері</div>
+      </div>
+
+      <div class="question" data-q="5">
+        <div class="q-text">5. Мұхамеджан Тынышбаев кім болған?</div>
+        <div class="options">
+          <label><input type="radio" name="q5" value="a"><span>A. Белгілі суретші</span></label>
+          <label><input type="radio" name="q5" value="b"><span>B. Тұңғыш қазақ инженер-теміржолшыларының бірі</span></label>
+          <label><input type="radio" name="q5" value="c"><span>C. Журнал редакторы</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="b">Дұрыс жауап: B. Тұңғыш қазақ инженер-теміржолшыларының бірі</div>
+      </div>
+
+      <div class="question" data-q="6">
+        <div class="q-text">6. «Айқап» журналы қай жылы жарық көрді?</div>
+        <div class="options">
+          <label><input type="radio" name="q6" value="a"><span>A. 1905 жылы</span></label>
+          <label><input type="radio" name="q6" value="b"><span>B. 1917 жылы</span></label>
+          <label><input type="radio" name="q6" value="c"><span>C. 1911 жылы</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="c">Дұрыс жауап: C. 1911 жылы</div>
+      </div>
+
+      <div class="question" data-q="7">
+        <div class="q-text">7. «Айқап» журналының редакторы кім болды?</div>
+        <div class="options">
+          <label><input type="radio" name="q7" value="a"><span>A. Мұхамеджан Сералин</span></label>
+          <label><input type="radio" name="q7" value="b"><span>B. Ахмет Байтұрсынұлы</span></label>
+          <label><input type="radio" name="q7" value="c"><span>C. Әлихан Бөкейхан</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="a">Дұрыс жауап: A. Мұхамеджан Сералин</div>
+      </div>
+
+      <div class="question" data-q="8">
+        <div class="q-text">8. Қазақ зиялылары халықтың қандай санасына ықпал етті?</div>
+        <div class="options">
+          <label><input type="radio" name="q8" value="a"><span>A. Тек экономикалық санасына</span></label>
+          <label><input type="radio" name="q8" value="b"><span>B. Құқықтық және эстетикалық санасына</span></label>
+          <label><input type="radio" name="q8" value="c"><span>C. Тек әскери санасына</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="b">Дұрыс жауап: B. Құқықтық және эстетикалық санасына</div>
+      </div>
+
+      <div class="question" data-q="9">
+        <div class="q-text">9. 1907 жылы қазақ тілінің мәртебесі қалай өзгерді?</div>
+        <div class="options">
+          <label><input type="radio" name="q9" value="a"><span>A. Мемлекеттік тіл болды</span></label>
+          <label><input type="radio" name="q9" value="b"><span>B. Ресми мәртебесі көтерілді</span></label>
+          <label><input type="radio" name="q9" value="c"><span>C. Төмендетілді</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="c">Дұрыс жауап: C. Төмендетілді</div>
+      </div>
+
+      <div class="question" data-q="10">
+        <div class="q-text">10. Қазақ зиялылары қазақ халқының қандай құқыққа ие болуын қалады?</div>
+        <div class="options">
+          <label><input type="radio" name="q10" value="a"><span>A. Өзге халықтармен тең құқықты болуын</span></label>
+          <label><input type="radio" name="q10" value="b"><span>B. Тек ауылда өмір сүру құқығын</span></label>
+          <label><input type="radio" name="q10" value="c"><span>C. Тек сауда жасау құқығын</span></label>
+        </div>
+        <div class="answer-feedback" data-correct="a">Дұрыс жауап: A. Өзге халықтармен тең құқықты болуын</div>
+      </div>
+
+      <button type="button" class="btn gold" id="submitBtn" onclick="submitQuiz()">✅ Тестті аяқтау</button>
+    </form>
+
+    <div class="result-box" id="resultBox">
+      <h2>Нәтиже</h2>
+      <div class="score" id="scoreDisplay">0 <span>/ 10</span></div>
+      <div class="message" id="message"></div>
+    </div>
+
+    <button type="button" class="btn secondary" onclick="showLeaderboard()" id="viewLbBtn" style="display:none;">📊 Толық рейтингті көру</button>
+
+    <!-- ОНЛАЙН РЕЙТИНГ -->
+    <div class="live-leaderboard" id="liveLeaderboard">
+      <h3>🏆 Онлайн рейтинг</h3>
+      <div class="live-hint"><span class="dot"></span>Нақты уақытта · Барлық оқушылар көреді</div>
+      <table class="live-lb-table">
+        <thead>
+          <tr>
+            <th style="width: 40px;">#</th>
+            <th>Аты-жөні</th>
+            <th style="width: 70px; text-align:center;">Балл</th>
+          </tr>
+        </thead>
+        <tbody id="liveLeaderboardBody">
+          <tr><td colspan="3" style="text-align:center;padding:15px;color:#888;">Жүктелуде...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Толық рейтинг -->
+  <div class="leaderboard" id="leaderboardScreen">
+    <h2>🏆 Толық рейтинг</h2>
+    <div class="tabs">
+      <div class="tab active">Барлық нәтиже</div>
+      <div class="tab" onclick="backToStart()">← Артқа</div>
+    </div>
+    <table class="lb-table" id="lbTable">
+      <thead>
+        <tr>
+          <th style="width: 60px;">Орын</th>
+          <th>Аты-жөні</th>
+          <th style="width: 90px; text-align:center;">Балл</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody"></tbody>
+    </table>
+    <div class="empty-lb" id="emptyLb" style="display:none;">
+      <span class="icon">📭</span>
+      Әзірге ешкім тест тапсырмаған
+    </div>
+    <button class="btn secondary" onclick="backToStart()" style="margin-top:20px;">← Басты бетке</button>
+
+    <div class="teacher-panel">
+      <h4>🔧 Мұғалімге арналған</h4>
+      <p>Барлық оқушылар тапсырып біткен соң, жаңа сессия бастау үшін осы батырманы басыңыз. Барлық ескі нәтижелер өшеді!</p>
+      <button class="btn small" onclick="resetSession()">🔄 Жаңа сессия бастау (барлығын өшіру)</button>
+    </div>
+  </div>
+
+  <!-- Бұрын тапсырған -->
+  <div class="already-done" id="alreadyDone">
+    <h2>⚠️ Сіз бұл атымен тестті бұрын тапсырғансыз!</h2>
+    <p id="alreadyDoneInfo"></p>
+    <p style="margin-top:15px;font-size:14px;">Басқа атпен кіру үшін төмендегі батырманы басыңыз.</p>
+    <button class="btn" onclick="changeName()">🔄 Атымды өзгерту</button>
+    <button class="btn secondary" onclick="showLeaderboard()">📊 Рейтингті көру</button>
+  </div>
+</div>
+
+<script type="module">
+  // ============================================================
+  // FIREBASE CONFIG
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCWkIc8zfiGjrI8IkW4HZykeB628YZnfg",
+    authDomain: "test-quiz-9ee06.firebaseapp.com",
+    projectId: "test-quiz-9ee06",
+    storageBucket: "test-quiz-9ee06.firebasestorage.app",
+    messagingSenderId: "920207740792",
+    appId: "1:920207740792:web:98484148619a5b324d828d",
+    measurementId: "G-MGFQ5HBL2C"
+  };
+  // ============================================================
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, setDoc, serverTimestamp, onSnapshot }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const RESULTS_COLLECTION = "quiz_results";
+  const SESSION_DOC = "active_session"; // Белсенді сессия құжаты
+
+  const correctAnswers = {
+    q1: 'a', q2: 'b', q3: 'c', q4: 'a', q5: 'b',
+    q6: 'c', q7: 'a', q8: 'b', q9: 'c', q10: 'a'
+  };
+  const totalQuestions = 10;
+
+  // ============================================================
+  // СЕССИЯ ЖҮЙЕСІ (БАРЛЫҚ ОҚУШЫҒА ОРТАҚ)
+  // ============================================================
+
+  let sessionId = null;
+  let currentUser = "";
+  let currentScore = 0;
+  let unsubscribeLive = null;
+
+  // ===== Сессияны инициализациялау =====
+  async function initSession() {
+    try {
+      const sessionRef = doc(db, "sessions", SESSION_DOC);
+      const snap = await getDoc(sessionRef);
+
+      if (snap.exists()) {
+        const data = snap.data();
+        // Егер сессия 6 сағаттан асқан болса — жаңадан бастау
+        const created = data.createdAt?.toDate?.() || new Date(0);
+        const ageHours = (Date.now() - created.getTime()) / (1000 * 60 * 60);
+        if (ageHours > 6) {
+          // Ескі сессияны тазалау
+          await clearSessionResults(data.id);
+          sessionId = generateSessionId();
+          await setDoc(sessionRef, { id: sessionId, createdAt: serverTimestamp() });
+        } else {
+          sessionId = data.id;
+        }
+      } else {
+        // Бірінші рет — жаңа сессия жасау
+        sessionId = generateSessionId();
+        await setDoc(sessionRef, { id: sessionId, createdAt: serverTimestamp() });
+      }
+
+      document.getElementById('sessionLabel').textContent = sessionId.replace("s_", "").replace(/_/g, " ");
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'block';
+
+    } catch (err) {
+      console.error(err);
+      alert('Сессияны жүктеу қатесі: ' + err.message);
+      document.getElementById('loadingScreen').innerHTML = '<p style="color:#e74c3c;">Қате: ' + err.message + '</p>';
+    }
+  }
+
+  function generateSessionId() {
+    const d = new Date();
+    return "s_" + d.getFullYear() +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      String(d.getDate()).padStart(2, '0') + "_" +
+      String(d.getHours()).padStart(2, '0') +
+      String(d.getMinutes()).padStart(2, '0') +
+      String(d.getSeconds()).padStart(2, '0') + "_" +
+      Math.random().toString(36).substring(2, 8);
+  }
+
+  // ===== Сессияның барлық нәтижелерін өшіру =====
+  async function clearSessionResults(sid) {
+    try {
+      const q = query(collection(db, RESULTS_COLLECTION), where("sessionId", "==", sid));
+      const snapshot = await getDocs(q);
+      for (const d of snapshot.docs) {
+        await deleteDoc(d.ref);
+      }
+    } catch (err) {
+      console.error('Clear error:', err);
+    }
+  }
+
+  // Іске қосу
+  initSession();
+
+  // ==== Кіру ====
+  window.startQuiz = async function() {
+    if (!sessionId) {
+      alert('Сессия жүктелмеді. Бетті жаңартыңыз.');
+      return;
+    }
+
+    const nameInput = document.getElementById('studentName');
+    const name = nameInput.value.trim();
+
+    if (name.length < 2) {
+      alert('Атыңызды толық жазыңыз!');
+      return;
+    }
+
+    const startBtn = document.getElementById('startBtn');
+    startBtn.disabled = true;
+    startBtn.innerHTML = '<span class="loader"></span>Тексерілуде...';
+
+    try {
+      // Осы сессияда бұл атпен тапсырылған ба?
+      const q = query(
+        collection(db, RESULTS_COLLECTION),
+        where("sessionId", "==", sessionId),
+        where("nameLower", "==", name.toLowerCase())
+      );
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('alreadyDone').style.display = 'block';
+        document.getElementById('alreadyDoneInfo').innerHTML =
+          `Сіздің нәтижеңіз: <strong>${data.score} / ${totalQuestions}</strong>`;
+        startBtn.disabled = false;
+        startBtn.textContent = 'Тестті бастау';
+        return;
+      }
+
+      currentUser = name;
+      document.getElementById('displayName').textContent = name;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('testScreen').style.display = 'block';
+
+      document.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', updateProgress);
+      });
+
+      // Онлайн рейтингті қосу
+      startLiveLeaderboard();
+
+      startBtn.disabled = false;
+      startBtn.textContent = 'Тестті бастау';
+
+    } catch (err) {
+      console.error(err);
+      alert('Қате: ' + err.message);
+      startBtn.disabled = false;
+      startBtn.textContent = 'Тестті бастау';
+    }
+  };
+
+  window.changeName = function() {
+    document.getElementById('studentName').value = '';
+    document.getElementById('alreadyDone').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('studentName').focus();
+  };
+
+  function updateProgress() {
+    let answered = 0;
+    for (let i = 1; i <= totalQuestions; i++) {
+      if (document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+    }
+    document.getElementById('progressText').textContent = `${answered} / ${totalQuestions}`;
+    document.getElementById('progressFill').style.width = (answered / totalQuestions * 100) + '%';
+  }
+
+  // ==== Тестті аяқтау ====
+  window.submitQuiz = async function() {
+    for (let i = 1; i <= totalQuestions; i++) {
+      if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+        alert(`Сұрақ ${i}-ге жауап беріңіз!`);
+        return;
+      }
+    }
+
+    if (!confirm('Тестті аяқтағыңыз келе ме? Нәтижені өзгерту мүмкін болмайды!')) return;
+
+    let score = 0;
+    for (let i = 1; i <= totalQuestions; i++) {
+      const selected = document.querySelector(`input[name="q${i}"]:checked`).value;
+      const questionDiv = document.querySelector(`.question[data-q="${i}"]`);
+      const feedback = questionDiv.querySelector('.answer-feedback');
+
+      questionDiv.classList.remove('correct', 'wrong');
+      feedback.classList.remove('show', 'correct', 'wrong');
+
+      if (selected === correctAnswers['q' + i]) {
+        score++;
+        questionDiv.classList.add('correct');
+        feedback.classList.add('show', 'correct');
+      } else {
+        questionDiv.classList.add('wrong');
+        feedback.classList.add('show', 'wrong');
+      }
+    }
+    currentScore = score;
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="loader"></span>Сақталуда...';
+
+    try {
+      await addDoc(collection(db, RESULTS_COLLECTION), {
+        name: currentUser,
+        nameLower: currentUser.toLowerCase(),
+        score: score,
+        total: totalQuestions,
+        sessionId: sessionId,
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error(err);
+      alert('Нәтижені сақтау мүмкін болмады: ' + err.message);
+    }
+
+    const resultBox = document.getElementById('resultBox');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const message = document.getElementById('message');
+
+    scoreDisplay.innerHTML = score + ' <span>/ ' + totalQuestions + '</span>';
+    resultBox.classList.add('show');
+
+    if (score === 10) {
+      resultBox.style.background = 'linear-gradient(135deg, #d4f5e2, #a8e6c1)';
+      resultBox.style.color = '#1e7e46';
+      message.textContent = 'Керемет! Барлық жауап дұрыс! 🎉';
+    } else if (score >= 7) {
+      resultBox.style.background = 'linear-gradient(135deg, #fff3cd, #ffe69c)';
+      resultBox.style.color = '#856404';
+      message.textContent = 'Жақсы нәтиже! 👍';
+    } else if (score >= 4) {
+      resultBox.style.background = 'linear-gradient(135deg, #ffe0b2, #ffcc80)';
+      resultBox.style.color = '#e65100';
+      message.textContent = 'Орташа нәтиже. 📖';
+    } else {
+      resultBox.style.background = 'linear-gradient(135deg, #fadbd8, #f5b7b1)';
+      resultBox.style.color = '#a93226';
+      message.textContent = 'Нашар нәтиже. 📚';
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    submitBtn.style.display = 'none';
+    document.getElementById('viewLbBtn').style.display = 'block';
+
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  // ==== ОНЛАЙН РЕЙТИНГ (onSnapshot — НАҚТЫ УАҚЫТТА, БАРЛЫҚ ОҚУШЫҒА) ====
+  function startLiveLeaderboard() {
+    if (unsubscribeLive) unsubscribeLive();
+
+    const tbody = document.getElementById('liveLeaderboardBody');
+    document.getElementById('liveLeaderboard').classList.add('show');
+
+    const q = query(
+      collection(db, RESULTS_COLLECTION),
+      where("sessionId", "==", sessionId)
+    );
+
+    unsubscribeLive = onSnapshot(q, (snapshot) => {
+      const results = [];
+      snapshot.forEach(doc => results.push(doc.data()));
+
+      if (results.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:15px;color:#888;">Әзірге нәтиже жоқ</td></tr>';
+        return;
+      }
+
+      const sorted = [...results].sort((a, b) => b.score - a.score);
+
+      let rows = '';
+      let rank = 0;
+      let prevScore = null;
+      let sameRank = 0;
+
+      sorted.forEach(r => {
+        if (r.score !== prevScore) {
+          rank += sameRank + 1;
+          sameRank = 0;
+        } else {
+          sameRank++;
+        }
+        prevScore = r.score;
+
+        let cls = '';
+        if (rank === 1) cls = 'top-1';
+        else if (rank === 2) cls = 'top-2';
+        else if (rank === 3) cls = 'top-3';
+        if (r.name === currentUser) cls += ' me';
+
+        let medal = '';
+        if (rank === 1) medal = '🥇 ';
+        else if (rank === 2) medal = '🥈 ';
+        else if (rank === 3) medal = '🥉 ';
+
+        rows += `<tr class="${cls}">
+          <td>${medal}${rank}</td>
+          <td>${escapeHtml(r.name)}${r.name === currentUser ? ' <span style="color:#2ecc71;font-size:11px;">(сіз)</span>' : ''}</td>
+          <td style="text-align:center;font-weight:700;color:#1e3c72;">${r.score}</td>
+        </tr>`;
+      });
+
+      tbody.innerHTML = rows;
+    }, (err) => {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:15px;color:#e74c3c;">Қате: ' + err.message + '</td></tr>';
+    });
+  }
+
+  // ==== Толық рейтинг ====
+  window.showLeaderboard = async function() {
+    if (unsubscribeLive) {
+      unsubscribeLive();
+      unsubscribeLive = null;
+    }
+
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('testScreen').style.display = 'none';
+    document.getElementById('alreadyDone').style.display = 'none';
+    document.getElementById('leaderboardScreen').style.display = 'block';
+
+    const tbody = document.getElementById('leaderboardBody');
+    const emptyLb = document.getElementById('emptyLb');
+    const lbTable = document.getElementById('lbTable');
+
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:#888;">Жүктелуде...</td></tr>';
+
+    try {
+      const q = query(
+        collection(db, RESULTS_COLLECTION),
+        where("sessionId", "==", sessionId)
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        tbody.innerHTML = '';
+        lbTable.style.display = 'none';
+        emptyLb.style.display = 'block';
+        return;
+      }
+
+      lbTable.style.display = 'table';
+      emptyLb.style.display = 'none';
+
+      const results = [];
+      snapshot.forEach(doc => results.push(doc.data()));
+      const sorted = [...results].sort((a, b) => b.score - a.score);
+
+      let rows = '';
+      let rank = 0;
+      let prevScore = null;
+      let sameRank = 0;
+
+      sorted.forEach(r => {
+        if (r.score !== prevScore) {
+          rank += sameRank + 1;
+          sameRank = 0;
+        } else {
+          sameRank++;
+        }
+        prevScore = r.score;
+
+        let medal = '';
+        let rankClass = '';
+        if (rank === 1) { medal = '🥇'; rankClass = 'rank-1'; }
+        else if (rank === 2) { medal = '🥈'; rankClass = 'rank-2'; }
+        else if (rank === 3) { medal = '🥉'; rankClass = 'rank-3'; }
+
+        rows += `<tr class="${rankClass}">
+          <td><span class="medal">${medal}</span>${rank}</td>
+          <td>${escapeHtml(r.name)}</td>
+          <td style="text-align:center;font-weight:700;color:#1e3c72;">${r.score} / ${r.total}</td>
+        </tr>`;
+      });
+
+      tbody.innerHTML = rows;
+
+    } catch (err) {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:#e74c3c;">Қате: ' + err.message + '</td></tr>';
+    }
+  };
+
+  window.backToStart = function() {
+    document.getElementById('leaderboardScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'block';
+  };
+
+  // ==== ЖАҢА СЕССИЯ БАСТАУ (мұғалім) ====
+  window.resetSession = async function() {
+    const confirmText = prompt(
+      'Барлық нәтижелерді өшіріп, жаңа сессия бастау үшін "ЖАҢА" деп жазыңыз:'
+    );
+    if (confirmText !== 'ЖАҢА') {
+      alert('Бас тартылды.');
+      return;
+    }
+
+    try {
+      // Ескі сессияның барлық нәтижелерін өшіру
+      await clearSessionResults(sessionId);
+
+      // Жаңа сессия ID-і
+      sessionId = generateSessionId();
+      await setDoc(doc(db, "sessions", SESSION_DOC), {
+        id: sessionId,
+        createdAt: serverTimestamp()
+      });
+
+      alert('✅ Жаңа сессия басталды! Барлық ескі нәтижелер өшірілді.');
+      location.reload();
+
+    } catch (err) {
+      console.error(err);
+      alert('Қате: ' + err.message);
+    }
+  };
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>
+</body>
+</html>
